@@ -17,6 +17,7 @@ const Title = styled.h1`
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  @media (max-width: 480px) { font-size: var(--font-size-lg); }
 `;
 
 const ClearBtn = styled.button`
@@ -24,6 +25,7 @@ const ClearBtn = styled.button`
   font-weight: 700;
   color: var(--color-text-muted);
   transition: var(--transition);
+  white-space: nowrap;
   &:hover { color: var(--color-danger); }
 `;
 
@@ -48,6 +50,7 @@ const Summary = styled.div`
   overflow: hidden;
   position: sticky;
   top: calc(var(--navbar-height) + var(--spacing-md));
+  @media (max-width: 1024px) { position: static; }
 `;
 
 const SummaryHeader = styled.div`
@@ -115,24 +118,20 @@ const ContinueLink = styled(Link)`
 
 const Empty = styled.div`
   text-align: center;
-  padding: var(--spacing-3xl);
+  padding: var(--spacing-3xl) var(--spacing-md);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--spacing-lg);
 `;
 
-const EmptyIcon = styled.p`font-size: 4rem;`;
+const EmptyIcon  = styled.p`font-size: 4rem;`;
 const EmptyTitle = styled.h2`font-size: var(--font-size-xl); font-weight: 800;`;
-const EmptyText = styled.p`color: var(--color-text-muted); font-size: 0.9rem;`;
-const EmptyBtn = styled(Link)`
-  background: #111827;
-  color: white;
-  padding: 0.85rem 2rem;
-  border-radius: var(--radius-md);
-  font-weight: 700;
-  font-size: 0.9rem;
-  transition: var(--transition);
+const EmptyText  = styled.p`color: var(--color-text-muted); font-size: 0.9rem;`;
+const EmptyBtn   = styled(Link)`
+  background: #111827; color: white;
+  padding: 0.85rem 2rem; border-radius: var(--radius-md);
+  font-weight: 700; font-size: 0.9rem; transition: var(--transition);
   &:hover { background: var(--color-accent); }
 `;
 

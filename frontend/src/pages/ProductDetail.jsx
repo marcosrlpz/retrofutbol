@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import styled, { css } from "styled-components";
 import toast from "react-hot-toast";
 import { getProductByIdService, getAllProductsService } from "../services/product.service";
@@ -7,6 +8,7 @@ import useFetch from "../hooks/useFetch";
 import useCart from "../hooks/useCart";
 import Loader from "../components/ui/Loader";
 import ProductCard from "../components/ui/ProductCard";
+import ReviewSection from "../components/ui/ReviewSection";
 
 /* ─── ZOOM MODAL ─────────────────────────────────────────────────── */
 const ZoomOverlay = styled.div`
@@ -46,6 +48,31 @@ const ZoomCloseBtn = styled.button`
   z-index: 501;
   transition: var(--transition);
   &:hover { background: #f5f0e8; }
+`;
+
+/* ─── BREADCRUMBS ────────────────────────────────────────────────── */
+const Breadcrumbs = styled.nav`
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  margin-bottom: var(--spacing-lg);
+  flex-wrap: wrap;
+`;
+const Crumb = styled(Link)`
+  color: var(--color-text-muted);
+  transition: var(--transition);
+  &:hover { color: var(--color-accent); }
+`;
+const CrumbSep = styled.span`color: var(--color-border);`;
+const CrumbCurrent = styled.span`
+  color: var(--color-text);
+  font-weight: 600;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
 /* ─── MAIN LAYOUT ─────────────────────────────────────────────────── */
@@ -171,6 +198,72 @@ const Stock = styled.p`
   color: ${({ $ok }) => $ok ? "var(--color-success)" : "var(--color-danger)"};
 `;
 
+/* ─── DESCRIPCIÓN Y INFO ADICIONAL ───────────────────────────────── */
+const InfoTabs = styled.div`
+  margin-top: var(--spacing-3xl);
+  border-top: 2px solid var(--color-primary);
+  padding-top: var(--spacing-xl);
+`;
+
+const TabsHeader = styled.div`
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--spacing-xl);
+`;
+
+const Tab = styled.button`
+  padding: 0.75rem 1.5rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-bottom: 2px solid ${({ $active }) => $active ? "#111827" : "transparent"};
+  color: ${({ $active }) => $active ? "#111827" : "var(--color-text-muted)"};
+  transition: var(--transition);
+  margin-bottom: -1px;
+  font-family: var(--font-family);
+  &:hover { color: #111827; }
+`;
+
+const TabContent = styled.div`
+  color: var(--color-text-muted);
+  line-height: 1.8;
+  font-size: 0.95rem;
+`;
+
+const InfoGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-sm);
+  @media (max-width: 640px) { grid-template-columns: 1fr; }
+`;
+
+const InfoRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+`;
+
+const InfoRowLabel = styled.span`
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+  min-width: 80px;
+`;
+
+const InfoRowValue = styled.span`
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text);
+`;
+
 /* ─── PERSONALIZADOR ──────────────────────────────────────────────── */
 const CustomSection = styled.div`
   background: var(--color-bg-secondary);
@@ -245,7 +338,6 @@ const CustomSelect = styled.select`
   &:focus { outline: none; border-color: var(--color-primary); }
 `;
 
-/* Selector de talla */
 const SizeGrid = styled.div`
   display: flex;
   gap: 0.5rem;
@@ -266,7 +358,6 @@ const SizeBtn = styled.button`
   &:hover { border-color: #111827; }
 `;
 
-/* Guía tallas */
 const SizeGuideBtn = styled.button`
   font-size: 0.75rem;
   font-weight: 700;
@@ -378,27 +469,26 @@ const CloseGuideBtn = styled.button`
   &:hover { background: var(--color-accent); }
 `;
 
-const SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
+const SIZES = ["S", "M", "L", "XL", "2XL", "3XL", "4XL"];
 const PATCHES = ["Sin parches", "Champions League", "Copa del Rey", "FA Cup", "Serie A", "Bundesliga", "Liga Europa"];
 
 const sizeGuideData = [
-  { size: "XS", chest: "84-88", waist: "70-74", height: "160-165" },
-  { size: "S",  chest: "88-92", waist: "74-78", height: "165-170" },
-  { size: "M",  chest: "92-96", waist: "78-82", height: "170-175" },
-  { size: "L",  chest: "96-100", waist: "82-86", height: "175-180" },
-  { size: "XL", chest: "100-104", waist: "86-90", height: "180-185" },
-  { size: "XXL", chest: "104-110", waist: "90-96", height: "185-190" },
+  { size: "S",   ancho: "49-51", largo: "67-69", altura: "1,65-1,70" },
+  { size: "M",   ancho: "51-53", largo: "69-71", altura: "1,70-1,75" },
+  { size: "L",   ancho: "53-55", largo: "71-73", altura: "1,75-1,80" },
+  { size: "XL",  ancho: "55-57", largo: "73-76", altura: "1,80-1,85" },
+  { size: "2XL", ancho: "58-60", largo: "77-79", altura: "1,85-1,90" },
+  { size: "3XL", ancho: "60-62", largo: "80-82", altura: "1,90-1,95" },
+  { size: "4XL", ancho: "62-64", largo: "82-84", altura: "1,95-2,00" },
 ];
 
 const ProductDetail = () => {
   const { id } = useParams();
   const { addItem } = useCart();
 
-  // Producto principal
   const { data, loading, error } = useFetch(() => getProductByIdService(id), [id]);
   const product = data?.product;
 
-  // Productos relacionados (mismo equipo, excluyendo el actual)
   const fetchRelated = useCallback(() => {
     if (!product?.brand) return Promise.resolve({ products: [] });
     return getAllProductsService({ brand: product.brand, limit: 10 });
@@ -406,13 +496,13 @@ const ProductDetail = () => {
   const { data: relatedData } = useFetch(fetchRelated, [product?.brand]);
   const related = (relatedData?.products || []).filter(p => p._id !== id).slice(0, 4);
 
-  // Personalizador state
   const [selectedSize, setSelectedSize] = useState("");
   const [customName, setCustomName] = useState("");
   const [customNumber, setCustomNumber] = useState("");
   const [selectedPatch, setSelectedPatch] = useState("Sin parches");
   const [showZoom, setShowZoom] = useState(false);
   const [showSizeGuide, setShowSizeGuide] = useState(false);
+  const [activeTab, setActiveTab] = useState("descripcion");
 
   const handleAddToCart = () => {
     if (!selectedSize) {
@@ -435,9 +525,23 @@ const ProductDetail = () => {
     ? product.price + 5
     : product.price;
 
+  const genderLabel = product.gender === "male" ? "Hombre" : product.gender === "female" ? "Mujer" : product.gender || "Unisex";
+
   return (
     <>
-      {/* Zoom Modal */}
+      {/* ── SEO ──────────────────────────────────────────────────── */}
+      <Helmet>
+        <title>{product.name} | RetroFútbol</title>
+        <meta
+          name="description"
+          content={`${product.name} de ${product.brand}${product.temporada ? ` — Temporada ${product.temporada}` : ""}. ${product.description?.slice(0, 120) || "Camiseta retro auténtica de alta calidad."}. Solo ${product.price?.toFixed(2)}€.`}
+        />
+        <meta property="og:title" content={`${product.name} | RetroFútbol`} />
+        <meta property="og:description" content={`${product.name} de ${product.brand}. Solo ${product.price?.toFixed(2)}€. Envío rápido.`} />
+        <meta property="og:image" content={product.image_url} />
+        <meta property="og:type" content="product" />
+      </Helmet>
+
       {showZoom && (
         <ZoomOverlay onClick={() => setShowZoom(false)}>
           <ZoomCloseBtn onClick={() => setShowZoom(false)}>✕</ZoomCloseBtn>
@@ -449,7 +553,6 @@ const ProductDetail = () => {
         </ZoomOverlay>
       )}
 
-      {/* Size Guide Modal */}
       {showSizeGuide && (
         <SizeGuideOverlay onClick={() => setShowSizeGuide(false)}>
           <SizeGuideCard onClick={e => e.stopPropagation()}>
@@ -458,18 +561,18 @@ const ProductDetail = () => {
               <thead>
                 <tr>
                   <th>Talla</th>
-                  <th>Pecho (cm)</th>
-                  <th>Cintura (cm)</th>
-                  <th>Altura (cm)</th>
+                  <th>Ancho (cm)</th>
+                  <th>Largo (cm)</th>
+                  <th>Altura (m)</th>
                 </tr>
               </thead>
               <tbody>
                 {sizeGuideData.map(r => (
                   <tr key={r.size}>
                     <td><strong>{r.size}</strong></td>
-                    <td>{r.chest}</td>
-                    <td>{r.waist}</td>
-                    <td>{r.height}</td>
+                    <td>{r.ancho}</td>
+                    <td>{r.largo}</td>
+                    <td>{r.altura}</td>
                   </tr>
                 ))}
               </tbody>
@@ -479,19 +582,28 @@ const ProductDetail = () => {
         </SizeGuideOverlay>
       )}
 
+      <Breadcrumbs>
+        <Crumb to="/">Inicio</Crumb>
+        <CrumbSep>›</CrumbSep>
+        <Crumb to="/products">Catálogo</Crumb>
+        {product.category && (
+          <><CrumbSep>›</CrumbSep><Crumb to={`/products?category=${encodeURIComponent(product.category)}`}>{product.category}</Crumb></>
+        )}
+        {product.brand && (
+          <><CrumbSep>›</CrumbSep><Crumb to={`/team/${encodeURIComponent(product.brand)}`}>{product.brand}</Crumb></>
+        )}
+        <CrumbSep>›</CrumbSep>
+        <CrumbCurrent>{product.name}</CrumbCurrent>
+      </Breadcrumbs>
+
       <BackLink to="/products">← Volver al catálogo</BackLink>
 
       <Layout>
-        {/* IMAGEN */}
         <ImageWrapper onClick={() => setShowZoom(true)}>
-          <Image
-            src={product.image_url || "/camisretro.jpg"}
-            alt={product.name}
-          />
+          <Image src={product.image_url || "/camisretro.jpg"} alt={product.name} />
           <ZoomHint className="zoom-hint">🔍 Ver en detalle</ZoomHint>
         </ImageWrapper>
 
-        {/* INFO + PERSONALIZADOR */}
         <Info>
           <div>
             <LeagueTag>{product.category}</LeagueTag>
@@ -512,17 +624,11 @@ const ProductDetail = () => {
           </div>
 
           <Description>{product.description}</Description>
-
           <Divider />
 
-          {/* PERSONALIZADOR */}
           <CustomSection>
-            <CustomHeader>
-              ✂️ Personaliza tu camiseta
-            </CustomHeader>
+            <CustomHeader>✂️ Personaliza tu camiseta</CustomHeader>
             <CustomBody>
-
-              {/* TALLA */}
               <CustomField>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <CustomLabel>
@@ -534,74 +640,36 @@ const ProductDetail = () => {
                 </div>
                 <SizeGrid>
                   {SIZES.map(s => (
-                    <SizeBtn
-                      key={s}
-                      $active={selectedSize === s}
-                      onClick={() => setSelectedSize(s)}
-                      type="button"
-                    >
-                      {s}
-                    </SizeBtn>
+                    <SizeBtn key={s} $active={selectedSize === s} onClick={() => setSelectedSize(s)} type="button">{s}</SizeBtn>
                   ))}
                 </SizeGrid>
               </CustomField>
 
-              {/* NOMBRE Y NÚMERO */}
               <CustomRow>
                 <CustomField>
                   <CustomLabel>Nombre (dorsal)</CustomLabel>
-                  <CustomInput
-                    placeholder="Nombre de jugador/personal"
-                    value={customName}
-                    onChange={e => setCustomName(e.target.value)}
-                    maxLength={14}
-                  />
+                  <CustomInput placeholder="Nombre de jugador/personal" value={customName} onChange={e => setCustomName(e.target.value)} maxLength={14} />
                 </CustomField>
                 <CustomField>
                   <CustomLabel>Número (dorsal)</CustomLabel>
-                  <CustomInput
-                    placeholder="Número del dorsal"
-                    value={customNumber}
-                    onChange={e => setCustomNumber(e.target.value.replace(/[^0-9]/g, ""))}
-                    maxLength={2}
-                    type="text"
-                    inputMode="numeric"
-                  />
+                  <CustomInput placeholder="Número del dorsal" value={customNumber} onChange={e => setCustomNumber(e.target.value.replace(/[^0-9]/g, ""))} maxLength={2} type="text" inputMode="numeric" />
                 </CustomField>
               </CustomRow>
 
-              {/* PARCHES */}
               <CustomField>
                 <CustomLabel>Parches</CustomLabel>
-                <CustomSelect
-                  value={selectedPatch}
-                  onChange={e => setSelectedPatch(e.target.value)}
-                >
-                  {PATCHES.map(p => (
-                    <option key={p} value={p}>{p}</option>
-                  ))}
+                <CustomSelect value={selectedPatch} onChange={e => setSelectedPatch(e.target.value)}>
+                  {PATCHES.map(p => (<option key={p} value={p}>{p}</option>))}
                 </CustomSelect>
               </CustomField>
 
-              {/* Preview personalización */}
               {(customName.trim() || customNumber.trim() || selectedPatch !== "Sin parches") && (
-                <div style={{
-                  background: "white",
-                  border: "1px dashed var(--color-border)",
-                  borderRadius: "var(--radius-md)",
-                  padding: "0.75rem 1rem",
-                  fontSize: "0.82rem",
-                  color: "var(--color-text-muted)",
-                  display: "flex",
-                  gap: "1rem",
-                  flexWrap: "wrap"
-                }}>
+                <div style={{ background: "white", border: "1px dashed var(--color-border)", borderRadius: "var(--radius-md)", padding: "0.75rem 1rem", fontSize: "0.82rem", color: "var(--color-text-muted)", display: "flex", gap: "1rem", flexWrap: "wrap" }}>
                   {customName.trim() && <span>👤 <strong>{customName.trim().toUpperCase()}</strong></span>}
                   {customNumber.trim() && <span>🔢 <strong>#{customNumber}</strong></span>}
                   {selectedPatch !== "Sin parches" && <span>🏆 <strong>{selectedPatch}</strong></span>}
                 </div>
               )}
-
             </CustomBody>
           </CustomSection>
 
@@ -615,17 +683,118 @@ const ProductDetail = () => {
         </Info>
       </Layout>
 
-      {/* PRODUCTOS RELACIONADOS */}
+      {/* ── TABS: DESCRIPCIÓN + INFO ADICIONAL ───────────────────── */}
+      <InfoTabs>
+        <TabsHeader>
+          <Tab $active={activeTab === "descripcion"} onClick={() => setActiveTab("descripcion")}>
+            📋 Descripción
+          </Tab>
+            <Tab $active={activeTab === "info"} onClick={() => setActiveTab("info")}>
+            ℹ️ Información adicional
+          </Tab>
+          <Tab $active={activeTab === "tallas"} onClick={() => setActiveTab("tallas")}>
+            📏 Guía de tallas
+          </Tab>
+        </TabsHeader>
+
+        <TabContent>
+          {activeTab === "descripcion" && (
+            <p style={{ maxWidth: "700px", lineHeight: "1.8" }}>
+              {product.description ||
+                `La ${product.name} es una pieza histórica del fútbol. Una camiseta auténtica que captura la esencia de una época dorada del deporte rey. Confeccionada con materiales de alta calidad que reproducen fielmente el diseño original, perfecta tanto para coleccionistas como para aficionados que quieren llevar un trozo de historia.`}
+            </p>
+          )}
+
+          {activeTab === "tallas" && (
+            <div style={{ overflowX: "auto" }}>
+              <p style={{ marginBottom: "1rem", fontSize: "0.9rem", color: "var(--color-text-muted)" }}>
+                Medidas orientativas en centímetros. Si estás entre dos tallas, te recomendamos elegir la mayor.
+              </p>
+              <SizeTable style={{ maxWidth: "600px" }}>
+                <thead>
+                  <tr>
+                    <th>Talla</th>
+                    <th>Ancho (cm)</th>
+                    <th>Largo (cm)</th>
+                    <th>Altura (m)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sizeGuideData.map(r => (
+                    <tr key={r.size}>
+                      <td><strong>{r.size}</strong></td>
+                      <td>{r.ancho}</td>
+                      <td>{r.largo}</td>
+                      <td>{r.altura}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </SizeTable>
+              <p style={{ marginTop: "1rem", fontSize: "0.8rem", color: "var(--color-text-muted)" }}>
+                💡 Las camisetas de fútbol retro suelen tener un corte más ajustado que las modernas. Si prefieres un ajuste holgado, sube una talla.
+              </p>
+            </div>
+          )}
+
+          {activeTab === "info" && (
+            <InfoGrid>
+              {product.brand && (
+                <InfoRow>
+                  <InfoRowLabel>🏟️ Club</InfoRowLabel>
+                  <InfoRowValue>{product.brand}</InfoRowValue>
+                </InfoRow>
+              )}
+              {product.temporada && (
+                <InfoRow>
+                  <InfoRowLabel>📅 Temporada</InfoRowLabel>
+                  <InfoRowValue>{product.temporada}</InfoRowValue>
+                </InfoRow>
+              )}
+              {product.category && (
+                <InfoRow>
+                  <InfoRowLabel>🏆 Liga</InfoRowLabel>
+                  <InfoRowValue>{product.category}</InfoRowValue>
+                </InfoRow>
+              )}
+              {product.gender && (
+                <InfoRow>
+                  <InfoRowLabel>👤 Género</InfoRowLabel>
+                  <InfoRowValue>{genderLabel}</InfoRowValue>
+                </InfoRow>
+              )}
+              {product.color && (
+                <InfoRow>
+                  <InfoRowLabel>🎨 Color</InfoRowLabel>
+                  <InfoRowValue style={{ textTransform: "capitalize" }}>{product.color}</InfoRowValue>
+                </InfoRow>
+              )}
+              <InfoRow>
+                <InfoRowLabel>👕 Material</InfoRowLabel>
+                <InfoRowValue>100% Poliéster</InfoRowValue>
+              </InfoRow>
+              <InfoRow>
+                <InfoRowLabel>🌍 Origen</InfoRowLabel>
+                <InfoRowValue>Réplica premium</InfoRowValue>
+              </InfoRow>
+              <InfoRow>
+                <InfoRowLabel>✂️ Personalizable</InfoRowLabel>
+                <InfoRowValue>Sí — nombre, número y parche</InfoRowValue>
+              </InfoRow>
+            </InfoGrid>
+          )}
+        </TabContent>
+      </InfoTabs>
+
       {related.length > 0 && (
         <RelatedSection>
           <RelatedTitle>Otras camisetas de {product.brand}</RelatedTitle>
           <RelatedGrid>
-            {related.map(p => (
-              <ProductCard key={p._id} product={p} />
-            ))}
+            {related.map(p => (<ProductCard key={p._id} product={p} />))}
           </RelatedGrid>
         </RelatedSection>
       )}
+
+      <ReviewSection productId={id} productRating={product.rating} />
     </>
   );
 };

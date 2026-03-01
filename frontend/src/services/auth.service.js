@@ -1,47 +1,41 @@
 import axios from "axios";
 
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
-});
+const api = axios.create({ baseURL: "http://localhost:5000/api" });
 
-// Interceptor: añade el token a todas las peticiones automáticamente
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
+  if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
 
-export const loginService = async (credentials) => {
-  const { data } = await api.post("/auth/login", credentials);
-  return data;
+export const registerService = async (data) => {
+  const res = await api.post("/auth/register", data);
+  return res.data;
 };
 
-export const registerService = async (userData) => {
-  const { data } = await api.post("/auth/register", userData);
-  return data;
+export const verifyEmailService = async (token) => {
+  const res = await api.get(`/auth/verify/${token}`);
+  return res.data;
+};
+
+export const loginService = async (data) => {
+  const res = await api.post("/auth/login", data);
+  return res.data;
 };
 
 export const getMeService = async () => {
-  const { data } = await api.get("/auth/me");
-  return data;
+  const res = await api.get("/auth/me");
+  return res.data;
 };
 
-// ✅ Actualizar perfil - devuelve data directamente (no data.data)
-export const updateMeService = async (userData) => {
-  const { data } = await api.put("/auth/me", userData);
-  return data; // { message, user }
+export const updateMeService = async (data) => {
+  const res = await api.put("/auth/me", data);
+  return res.data;
 };
 
 export const getAllUsersService = async () => {
-  const { data } = await api.get("/auth/users");
-  return data;
-};
-
-export const deleteUserService = async (id) => {
-  const { data } = await api.delete(`/auth/users/${id}`);
-  return data;
+  const res = await api.get("/auth/users");
+  return res.data;
 };
 
 export default api;

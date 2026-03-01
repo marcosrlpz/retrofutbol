@@ -7,6 +7,8 @@ const {
   updateMe,
   getAllUsers,
   deleteUser,
+  forgotPassword,
+  resetPassword,
 } = require("../controllers/auth.controller");
 const { protect } = require("../middlewares/auth.middleware");
 const { isAdmin } = require("../middlewares/role.middleware");
@@ -17,5 +19,7 @@ router.get("/me", protect, getMe);
 router.put("/me", protect, updateMe);
 router.get("/users", protect, isAdmin, getAllUsers);
 router.delete("/users/:id", protect, isAdmin, deleteUser);
+router.post("/forgot-password", forgotPassword);
+router.post("/reset-password/:token", resetPassword);
 
 module.exports = router;

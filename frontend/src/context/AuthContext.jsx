@@ -30,7 +30,6 @@ const authReducer = (state, action) => {
 export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
-  // Carga el usuario al iniciar si hay token
   useEffect(() => {
     const loadUser = async () => {
       if (!state.token) {
@@ -46,13 +45,13 @@ export const AuthProvider = ({ children }) => {
       }
     };
     loadUser();
-  }, []); // solo al montar
+  }, []);
 
-  // ── LOGIN ── devuelve { success: true } o { success: false, error: "..." }
-  const login = useCallback(async (email, password) => {
+  // ── LOGIN — acepta recaptchaToken opcional ──
+  const login = useCallback(async (email, password, recaptchaToken) => {
     try {
       dispatch({ type: "SET_LOADING", payload: true });
-      const data = await loginService({ email, password });
+      const data = await loginService({ email, password, recaptchaToken });
       localStorage.setItem("token", data.token);
       dispatch({ type: "LOGIN_SUCCESS", payload: data });
       return { success: true };
@@ -65,7 +64,7 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  // ── REGISTER ── devuelve { success: true } o { success: false, error: "..." }
+  // ── REGISTER ──
   const register = useCallback(async (userData) => {
     try {
       dispatch({ type: "SET_LOADING", payload: true });
@@ -82,13 +81,11 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  // ── LOGOUT ──
   const logout = useCallback(() => {
     localStorage.removeItem("token");
     dispatch({ type: "LOGOUT" });
   }, []);
 
-  // ── UPDATE USER ── (para perfil)
   const updateUser = useCallback((user) => {
     dispatch({ type: "SET_USER", payload: user });
   }, []);

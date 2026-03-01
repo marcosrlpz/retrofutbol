@@ -13,10 +13,11 @@ api.interceptors.request.use((config) => {
 export const getAllProductsService = async (filters = {}) => {
   const params = new URLSearchParams();
   if (filters.category) params.append("category", filters.category);
-  if (filters.brand) params.append("brand", filters.brand);
-  if (filters.search) params.append("search", filters.search);
-  if (filters.sort) params.append("sort", filters.sort);
-  if (filters.limit) params.append("limit", filters.limit);
+  if (filters.brand)    params.append("brand",    filters.brand);
+  if (filters.search)   params.append("search",   filters.search);
+  if (filters.sort)     params.append("sort",      filters.sort);
+  if (filters.limit)    params.append("limit",     filters.limit);
+  if (filters.page)     params.append("page",      filters.page);
 
   const { data } = await api.get(`/products?${params.toString()}`);
   return data;

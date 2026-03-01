@@ -6,7 +6,7 @@ const normalize = (s = "") =>
   String(s)
     .toLowerCase()
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "") // quita acentos
+    .replace(/[\u0300-\u036f]/g, "")
     .replace(/ñ/g, "n");
 
 const buildAccentInsensitiveRegex = (input = "") => {
@@ -24,12 +24,11 @@ const buildAccentInsensitiveRegex = (input = "") => {
 // GET /api/products
 const getAllProducts = async (req, res) => {
   try {
-    const { category, brand, search, sort, limit = 100 } = req.query;
+    const { category, brand, search, sort, page = 1, limit = 12 } = req.query;
 
     const filter = {};
     if (category) filter.category = category;
 
-    // ✅ BRAND tolerante (Coruna / Coruña / mayúsculas)
     if (brand) {
       filter.brand = { $regex: buildAccentInsensitiveRegex(brand) };
     }
@@ -49,9 +48,25 @@ const getAllProducts = async (req, res) => {
     else if (sort === "price_desc") sortObj = { price: -1 };
     else if (sort === "rating") sortObj = { rating: -1 };
 
-    const products = await Product.find(filter).sort(sortObj).limit(Number(limit));
+    const pageNum  = Math.max(1, parseInt(page));
+    const limitNum = Math.min(48, Math.max(1, parseInt(limit)));
+    const skip     = (pageNum - 1) * limitNum;
 
-    res.json({ success: true, products, count: products.length });
+    const [products, total] = await Promise.all([
+      Product.find(filter).sort(sortObj).skip(skip).limit(limitNum),
+      Product.countDocuments(filter),
+    ]);
+
+    res.json({
+      success: true,
+      products,
+      count: products.length,
+      total,
+      page: pageNum,
+      totalPages: Math.ceil(total / limitNum),
+      hasNextPage: pageNum < Math.ceil(total / limitNum),
+      hasPrevPage: pageNum > 1,
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

@@ -110,11 +110,59 @@ const ActionBtn = styled.button`
   &:hover { border-color: ${({ $danger }) => $danger ? "var(--color-danger)" : "var(--color-primary)"}; background: ${({ $danger }) => $danger ? "rgba(220,38,38,0.06)" : "var(--color-bg-secondary)"}; }
 `;
 
+/* ── PAGINACIÓN ─────────────────────────────────────────────────── */
+const PaginationWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--spacing-lg);
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+`;
+
+const PaginationInfo = styled.p`
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+`;
+
+const PaginationBtns = styled.div`
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+`;
+
+const PageBtn = styled.button`
+  min-width: 34px;
+  height: 34px;
+  padding: 0 0.5rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid ${({ $active }) => $active ? "#111827" : "var(--color-border)"};
+  background: ${({ $active }) => $active ? "#111827" : "white"};
+  color: ${({ $active }) => $active ? "white" : "var(--color-text)"};
+  font-size: 0.82rem;
+  font-weight: ${({ $active }) => $active ? "700" : "500"};
+  transition: var(--transition);
+  font-family: var(--font-family);
+  &:hover:not(:disabled) { border-color: #111827; background: ${({ $active }) => $active ? "#111827" : "var(--color-bg-secondary)"}; }
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
+`;
+
+const LIMIT = 20;
+
 const ManageProducts = () => {
-  const [showForm, setShowForm] = useState(false);
+  const [showForm, setShowForm]     = useState(false);
   const [editProduct, setEditProduct] = useState(null);
-  const { data, loading, refetch } = useFetch(useCallback(() => getAllProductsService(), []), []);
-  const products = data?.products || [];
+  const [page, setPage]             = useState(1);
+
+  const fetcher = useCallback(
+    () => getAllProductsService({ page, limit: LIMIT }),
+    [page]
+  );
+  const { data, loading, refetch } = useFetch(fetcher, [page]);
+
+  const products   = data?.products || [];
+  const total      = data?.total    || 0;
+  const totalPages = Math.ceil(total / LIMIT);
 
   const handleDelete = async (id, name) => {
     if (!window.confirm(`¿Eliminar "${name}"?`)) return;
@@ -127,44 +175,67 @@ const ManageProducts = () => {
 
   const handleClose = () => { setShowForm(false); setEditProduct(null); refetch(); };
 
+  const getPageNumbers = () => {
+    const pages = [];
+    for (let i = 1; i <= totalPages; i++) pages.push(i);
+    return pages;
+  };
+
   return (
     <>
       <Header>
-        <Title>📦 Gestión de camisetas</Title>
+        <Title>📦 Gestión de camisetas {total > 0 && <span style={{ fontSize: "0.9rem", color: "var(--color-text-muted)", fontWeight: 500 }}>({total} total)</span>}</Title>
         <AddBtn onClick={() => { setEditProduct(null); setShowForm(true); }}>+ Nueva camiseta</AddBtn>
       </Header>
 
       {showForm && <ProductForm product={editProduct} onClose={handleClose} />}
 
       {loading ? <Loader /> : (
-        <Table>
-          <TableHeader>
-            <span>Img</span>
-            <span>Camiseta</span>
-            <span>Liga</span>
-            <span>Precio</span>
-            <span>Stock</span>
-            <span>Temp.</span>
-            <span>Acciones</span>
-          </TableHeader>
-          {products.map(p => (
-            <TableRow key={p._id}>
-              <ProductImg src={p.image_url || "https://via.placeholder.com/44x55"} alt={p.name} />
-              <div>
-                <ProductName>{p.name}</ProductName>
-                <ProductClub>{p.brand}</ProductClub>
-              </div>
-              <LeagueBadge>{p.category}</LeagueBadge>
-              <Price>{p.price?.toFixed(2)} €</Price>
-              <Stock $low={p.stock < 3}>{p.stock}</Stock>
-              <Temporada>{p.temporada || "—"}</Temporada>
-              <Actions>
-                <ActionBtn onClick={() => { setEditProduct(p); setShowForm(true); }}>✏️</ActionBtn>
-                <ActionBtn $danger onClick={() => handleDelete(p._id, p.name)}>🗑️</ActionBtn>
-              </Actions>
-            </TableRow>
-          ))}
-        </Table>
+        <>
+          <Table>
+            <TableHeader>
+              <span>Img</span>
+              <span>Camiseta</span>
+              <span>Liga</span>
+              <span>Precio</span>
+              <span>Stock</span>
+              <span>Temp.</span>
+              <span>Acciones</span>
+            </TableHeader>
+            {products.map(p => (
+              <TableRow key={p._id}>
+                <ProductImg src={p.image_url || "https://via.placeholder.com/44x55"} alt={p.name} />
+                <div>
+                  <ProductName>{p.name}</ProductName>
+                  <ProductClub>{p.brand}</ProductClub>
+                </div>
+                <LeagueBadge>{p.category}</LeagueBadge>
+                <Price>{p.price?.toFixed(2)} €</Price>
+                <Stock $low={p.stock < 3}>{p.stock}</Stock>
+                <Temporada>{p.temporada || "—"}</Temporada>
+                <Actions>
+                  <ActionBtn onClick={() => { setEditProduct(p); setShowForm(true); }}>✏️</ActionBtn>
+                  <ActionBtn $danger onClick={() => handleDelete(p._id, p.name)}>🗑️</ActionBtn>
+                </Actions>
+              </TableRow>
+            ))}
+          </Table>
+
+          {totalPages > 1 && (
+            <PaginationWrapper>
+              <PaginationInfo>
+                Mostrando {(page - 1) * LIMIT + 1}–{Math.min(page * LIMIT, total)} de {total} camisetas
+              </PaginationInfo>
+              <PaginationBtns>
+                <PageBtn onClick={() => setPage(p => p - 1)} disabled={page === 1}>←</PageBtn>
+                {getPageNumbers().map(n => (
+                  <PageBtn key={n} $active={n === page} onClick={() => setPage(n)}>{n}</PageBtn>
+                ))}
+                <PageBtn onClick={() => setPage(p => p + 1)} disabled={page === totalPages}>→</PageBtn>
+              </PaginationBtns>
+            </PaginationWrapper>
+          )}
+        </>
       )}
     </>
   );

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 
 const useFetch = (fetchFn, dependencies = []) => {
   const [data, setData] = useState(null);
@@ -6,27 +6,7 @@ const useFetch = (fetchFn, dependencies = []) => {
   const [error, setError] = useState(null);
   const isMounted = useRef(true);
 
-  useEffect(() => {
-    isMounted.current = true;
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const result = await fetchFn();
-        if (isMounted.current) setData(result);
-      } catch (err) {
-        if (isMounted.current) setError(err.response?.data?.message || "Error al cargar los datos");
-      } finally {
-        if (isMounted.current) setLoading(false);
-      }
-    };
-    fetchData();
-    return () => {
-      isMounted.current = false;
-    };
-  }, dependencies);
-
-  const refetch = async () => {
+  const fetchData = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -37,9 +17,15 @@ const useFetch = (fetchFn, dependencies = []) => {
     } finally {
       if (isMounted.current) setLoading(false);
     }
-  };
+  }, [fetchFn]);
 
-  return { data, loading, error, refetch };
+  useEffect(() => {
+    isMounted.current = true;
+    fetchData();
+    return () => { isMounted.current = false; };
+  }, dependencies);
+
+  return { data, setData, loading, error, refetch: fetchData };
 };
 
 export default useFetch;

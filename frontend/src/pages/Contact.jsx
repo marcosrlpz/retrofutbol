@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import styled from "styled-components";
 import toast from "react-hot-toast";
+import api from "../services/auth.service";
 
 const PageWrapper = styled.div`
   padding: var(--spacing-3xl) var(--spacing-xl);
@@ -8,71 +9,30 @@ const PageWrapper = styled.div`
   margin: 0 auto;
   @media (max-width: 768px) { padding: var(--spacing-2xl) var(--spacing-md); }
 `;
-
 const Header = styled.div`
-  text-align: center;
-  margin-bottom: var(--spacing-3xl);
-  border-bottom: 2px solid var(--color-primary);
-  padding-bottom: var(--spacing-md);
+  text-align: center; margin-bottom: var(--spacing-3xl);
+  border-bottom: 2px solid var(--color-primary); padding-bottom: var(--spacing-md);
 `;
-
-const Title = styled.h1`
-  font-size: var(--font-size-2xl);
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-`;
-
-const Subtitle = styled.p`
-  color: var(--color-text-muted);
-  margin-top: var(--spacing-xs);
-`;
-
+const Title = styled.h1`font-size: var(--font-size-2xl); font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em;`;
+const Subtitle = styled.p`color: var(--color-text-muted); margin-top: var(--spacing-xs);`;
 const Layout = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1.6fr;
-  gap: var(--spacing-3xl);
+  display: grid; grid-template-columns: 1fr 1.6fr; gap: var(--spacing-3xl);
   @media (max-width: 768px) { grid-template-columns: 1fr; }
 `;
-
-const InfoCol = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xl);
-`;
-
+const InfoCol = styled.div`display: flex; flex-direction: column; gap: var(--spacing-xl);`;
 const InfoCard = styled.div``;
 const InfoIcon = styled.div`
-  width: 44px;
-  height: 44px;
-  background: #111827;
-  border-radius: var(--radius-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
-  margin-bottom: 0.6rem;
+  width: 44px; height: 44px; background: #111827; border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center; font-size: 1.2rem; margin-bottom: 0.6rem;
 `;
 const InfoTitle = styled.h3`font-size: 0.9rem; font-weight: 700; margin-bottom: 0.3rem;`;
 const InfoText = styled.a`font-size: 0.85rem; color: var(--color-text-muted); display: block; transition: var(--transition); &:hover { color: var(--color-accent); }`;
-
-const Schedule = styled.div`
-  background: var(--color-bg-secondary);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-lg);
-`;
+const Schedule = styled.div`background: var(--color-bg-secondary); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--spacing-lg);`;
 const ScheduleTitle = styled.h3`font-size: 0.85rem; font-weight: 700; margin-bottom: var(--spacing-md); text-transform: uppercase; letter-spacing: 0.05em;`;
 const ScheduleRow = styled.div`display: flex; justify-content: space-between; font-size: 0.82rem; padding: 0.4rem 0; border-bottom: 1px solid var(--color-border); &:last-child { border-bottom: none; }`;
 const Day = styled.span`color: var(--color-text-muted);`;
 const Time = styled.span`font-weight: 700;`;
-
-const FormCard = styled.div`
-  background: var(--color-bg-secondary);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-2xl);
-`;
+const FormCard = styled.div`background: var(--color-bg-secondary); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--spacing-2xl);`;
 const FormTitle = styled.h2`font-size: var(--font-size-lg); font-weight: 800; margin-bottom: var(--spacing-xl);`;
 const Form = styled.form`display: flex; flex-direction: column; gap: var(--spacing-md);`;
 const Row = styled.div`display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); @media (max-width: 480px) { grid-template-columns: 1fr; }`;
@@ -81,45 +41,38 @@ const Label = styled.label`font-size: 0.78rem; font-weight: 700; color: var(--co
 const Input = styled.input`
   background: white;
   border: 1px solid ${({ $error }) => $error ? "var(--color-danger)" : "var(--color-border)"};
-  border-radius: var(--radius-md);
-  padding: 0.7rem 1rem;
-  color: var(--color-text);
-  font-size: 0.9rem;
-  transition: var(--transition);
+  border-radius: var(--radius-md); padding: 0.7rem 1rem;
+  color: var(--color-text); font-size: 0.9rem; transition: var(--transition);
+  &::placeholder { color: #9ca3af; }
   &:focus { outline: none; border-color: var(--color-primary); }
 `;
 const Textarea = styled.textarea`
   background: white;
   border: 1px solid ${({ $error }) => $error ? "var(--color-danger)" : "var(--color-border)"};
-  border-radius: var(--radius-md);
-  padding: 0.7rem 1rem;
-  color: var(--color-text);
-  font-size: 0.9rem;
-  font-family: var(--font-family);
-  resize: vertical;
-  min-height: 120px;
-  transition: var(--transition);
+  border-radius: var(--radius-md); padding: 0.7rem 1rem;
+  color: var(--color-text); font-size: 0.9rem; font-family: var(--font-family);
+  resize: vertical; min-height: 120px; transition: var(--transition);
+  &::placeholder { color: #9ca3af; }
   &:focus { outline: none; border-color: var(--color-primary); }
 `;
-
 const SendBtn = styled.button`
-  background: #111827;
-  color: white;
-  font-size: 0.9rem;
-  font-weight: 700;
-  padding: 0.9rem;
-  border-radius: var(--radius-md);
-  transition: var(--transition);
+  background: #111827; color: white; font-size: 0.9rem; font-weight: 700;
+  padding: 0.9rem; border-radius: var(--radius-md); transition: var(--transition);
   &:hover:not(:disabled) { background: var(--color-accent); }
   &:disabled { opacity: 0.5; cursor: not-allowed; }
 `;
 
 const Contact = () => {
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm();
-  const onSubmit = async () => {
-    await new Promise(r => setTimeout(r, 800));
-    toast.success("¡Mensaje enviado! Te responderemos en menos de 24h.");
-    reset();
+
+  const onSubmit = async (data) => {
+    try {
+      await api.post("/contact", data);
+      toast.success("¡Mensaje enviado! Te responderemos en menos de 24h.");
+      reset();
+    } catch {
+      toast.error("Error al enviar el mensaje. Inténtalo de nuevo.");
+    }
   };
 
   return (
@@ -133,8 +86,8 @@ const Contact = () => {
           <InfoCard>
             <InfoIcon>📧</InfoIcon>
             <InfoTitle>Email</InfoTitle>
-            <InfoText href="mailto:info@retrofutbol.es">info@retrofutbol.es</InfoText>
-            <InfoText href="mailto:pedidos@retrofutbol.es">pedidos@retrofutbol.es</InfoText>
+            <InfoText href="mailto:inf.retrofutbol@gmail.com">inf.retrofutbol@gmail.com</InfoText>
+            <InfoText href="mailto:pedidos.retrofutbol@gmail.com">pedidos.retrofutbol@gmail.com</InfoText>
           </InfoCard>
           <InfoCard>
             <InfoIcon>📞</InfoIcon>
@@ -151,7 +104,7 @@ const Contact = () => {
           <Schedule>
             <ScheduleTitle>🕐 Horario de atención</ScheduleTitle>
             <ScheduleRow><Day>Lunes - Viernes</Day><Time>9:00 - 21:00</Time></ScheduleRow>
-            <ScheduleRow><Day>Sábado - Domingo</Day><Time>9:00 - 15:00</Time></ScheduleRow>
+            <ScheduleRow><Day>Sábado</Day><Time>9:00 - 15:00</Time></ScheduleRow>
           </Schedule>
         </InfoCol>
         <FormCard>
@@ -160,20 +113,24 @@ const Contact = () => {
             <Row>
               <Field>
                 <Label>Nombre</Label>
-                <Input placeholder="Marcos" $error={errors.name} {...register("name", { required: true })} />
+                <Input placeholder="Tu nombre" $error={errors.name} autoComplete="off"
+                  {...register("name", { required: true })} />
               </Field>
               <Field>
                 <Label>Email</Label>
-                <Input type="email" placeholder="tu@email.com" $error={errors.email} {...register("email", { required: true })} />
+                <Input type="email" placeholder="Tu email" $error={errors.email} autoComplete="off"
+                  {...register("email", { required: true })} />
               </Field>
             </Row>
             <Field>
               <Label>Asunto</Label>
-              <Input placeholder="¿En qué podemos ayudarte?" $error={errors.subject} {...register("subject", { required: true })} />
+              <Input placeholder="¿En qué podemos ayudarte?" $error={errors.subject} autoComplete="off"
+                {...register("subject", { required: true })} />
             </Field>
             <Field>
               <Label>Mensaje</Label>
-              <Textarea placeholder="Escribe tu consulta aquí..." $error={errors.message} {...register("message", { required: true })} />
+              <Textarea placeholder="Escribe tu consulta aquí..." $error={errors.message}
+                {...register("message", { required: true })} />
             </Field>
             <SendBtn type="submit" disabled={isSubmitting}>
               {isSubmitting ? "Enviando..." : "Enviar mensaje"}

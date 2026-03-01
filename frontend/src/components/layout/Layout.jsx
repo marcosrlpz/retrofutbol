@@ -1,6 +1,8 @@
 import styled from "styled-components";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import CookieBanner from "../ui/CookieBanner";
+import WhatsAppButton from "../ui/WhatsAppButton";
 
 const Main = styled.main`
   min-height: calc(100vh - var(--navbar-height) - 60px);
@@ -21,6 +23,8 @@ const Layout = ({ children }) => (
     <Navbar />
     <Main>{children}</Main>
     <Footer />
+    <CookieBanner />
+    <WhatsAppButton />
   </>
 );
 

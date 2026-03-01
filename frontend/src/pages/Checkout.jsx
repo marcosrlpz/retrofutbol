@@ -16,6 +16,7 @@ const Title = styled.h1`
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  @media (max-width: 480px) { font-size: var(--font-size-lg); }
 `;
 
 const Layout = styled.div`
@@ -23,7 +24,16 @@ const Layout = styled.div`
   grid-template-columns: 1fr 340px;
   gap: var(--spacing-2xl);
   align-items: start;
-  @media (max-width: 1024px) { grid-template-columns: 1fr; }
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+/* En móvil el resumen va PRIMERO visualmente */
+const SummaryWrapper = styled.div`
+  @media (max-width: 1024px) {
+    order: -1;
+  }
 `;
 
 const Form = styled.form`display: flex; flex-direction: column; gap: var(--spacing-xl);`;
@@ -60,9 +70,9 @@ const Row = styled.div`
   @media (max-width: 480px) { grid-template-columns: 1fr; }
 `;
 
-const Field = styled.div`display: flex; flex-direction: column; gap: var(--spacing-xs);`;
-const Label = styled.label`font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-text-muted);`;
-const Input = styled.input`
+const Field    = styled.div`display: flex; flex-direction: column; gap: var(--spacing-xs);`;
+const Label    = styled.label`font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-text-muted);`;
+const Input    = styled.input`
   background: var(--color-bg-secondary);
   border: 1px solid ${({ $error }) => $error ? "var(--color-danger)" : "var(--color-border)"};
   border-radius: var(--radius-md);
@@ -70,9 +80,38 @@ const Input = styled.input`
   font-size: 0.9rem;
   color: var(--color-text);
   transition: var(--transition);
+  width: 100%;
+  &::placeholder { color: #9ca3af; }
+  &:focus { outline: none; border-color: var(--color-primary); background: white; }
+`;
+const Select   = styled.select`
+  background: var(--color-bg-secondary);
+  border: 1px solid ${({ $error }) => $error ? "var(--color-danger)" : "var(--color-border)"};
+  border-radius: var(--radius-md);
+  padding: 0.7rem 0.9rem;
+  font-size: 0.9rem;
+  font-family: var(--font-family);
+  color: var(--color-text);
+  transition: var(--transition);
+  cursor: pointer;
+  width: 100%;
   &:focus { outline: none; border-color: var(--color-primary); background: white; }
 `;
 const ErrorMsg = styled.span`font-size: 0.72rem; color: var(--color-danger);`;
+
+const ShippingInfo = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.9rem;
+  background: ${({ $free }) => $free ? "#dcfce7" : "#f0f9ff"};
+  border: 1px solid ${({ $free }) => $free ? "#86efac" : "#bae6fd"};
+  border-radius: var(--radius-md);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: ${({ $free }) => $free ? "#166534" : "#0369a1"};
+  flex-wrap: wrap;
+`;
 
 const PaymentOptions = styled.div`display: flex; flex-direction: column; gap: var(--spacing-sm);`;
 const PaymentOpt = styled.label`
@@ -98,6 +137,7 @@ const Summary = styled.div`
   overflow: hidden;
   position: sticky;
   top: calc(var(--navbar-height) + var(--spacing-md));
+  @media (max-width: 1024px) { position: static; }
 `;
 
 const SummaryHeader = styled.div`
@@ -110,14 +150,13 @@ const SummaryHeader = styled.div`
   letter-spacing: 0.08em;
 `;
 
-const SummaryBody = styled.div`padding: var(--spacing-lg); display: flex; flex-direction: column; gap: var(--spacing-sm);`;
-const SummaryRow = styled.div`
+const SummaryBody  = styled.div`padding: var(--spacing-lg); display: flex; flex-direction: column; gap: var(--spacing-sm);`;
+const SummaryRow   = styled.div`
   display: flex;
   justify-content: space-between;
-  font-size: 0.88rem;
   color: ${({ $bold }) => $bold ? "var(--color-text)" : "var(--color-text-muted)"};
   font-weight: ${({ $bold }) => $bold ? "800" : "400"};
-  padding-top: ${({ $bold }) => "var(--spacing-sm)"};
+  padding-top: ${({ $bold }) => $bold ? "var(--spacing-sm)" : "0"};
   border-top: ${({ $bold }) => $bold ? "1px solid var(--color-border)" : "none"};
   font-size: ${({ $bold }) => $bold ? "1.1rem" : "0.88rem"};
 `;
@@ -128,6 +167,14 @@ const ItemLine = styled.div`
   font-size: 0.82rem;
   color: var(--color-text-muted);
   padding: 0.2rem 0;
+  gap: 0.5rem;
+  span:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+  }
+  span:last-child { flex-shrink: 0; }
 `;
 
 const ConfirmBtn = styled.button`
@@ -144,23 +191,52 @@ const ConfirmBtn = styled.button`
   &:disabled { opacity: 0.5; cursor: not-allowed; }
 `;
 
+const SHIPPING_ZONES = [
+  { value: "peninsula",  label: "España peninsular",  cost: 4.99,  freeFrom: 75 },
+  { value: "baleares",   label: "Islas Baleares",     cost: 7.99,  freeFrom: null },
+  { value: "canarias",   label: "Islas Canarias",     cost: 9.99,  freeFrom: null },
+  { value: "ceuta",      label: "Ceuta y Melilla",    cost: 9.99,  freeFrom: null },
+  { value: "portugal",   label: "Portugal",           cost: 6.99,  freeFrom: null },
+  { value: "europa",     label: "Resto de Europa",    cost: 12.99, freeFrom: null },
+];
+
+const getShippingCost = (zone, subtotal) => {
+  const z = SHIPPING_ZONES.find(z => z.value === zone);
+  if (!z) return 4.99;
+  if (z.freeFrom && subtotal >= z.freeFrom) return 0;
+  return z.cost;
+};
+
 const Checkout = () => {
   const navigate = useNavigate();
   const { items, totalPrice, clearCart } = useCart();
-  const shipping = totalPrice >= 75 ? 0 : 4.99;
-  const total = totalPrice + shipping;
 
   const { register, handleSubmit, watch, formState: { errors, isSubmitting } } = useForm({
-    defaultValues: { paymentMethod: "card" }
+    defaultValues: { paymentMethod: "card", zone: "peninsula" }
   });
+
   const paymentMethod = watch("paymentMethod");
+  const zone          = watch("zone");
+  const shipping      = getShippingCost(zone, totalPrice);
+  const total         = totalPrice + shipping;
+  const selectedZone  = SHIPPING_ZONES.find(z => z.value === zone);
 
   const onSubmit = async (data) => {
     try {
       const orderData = {
-        items: items.map(i => ({ product: i.product._id, quantity: i.quantity, price: i.product.price })),
+        items: items.map(i => ({
+          product: i.product._id,
+          quantity: i.quantity,
+          price: i.product.price + ((i.customization?.name || i.customization?.number) ? 5 : 0),
+        })),
         total,
-        address: { street: data.street, city: data.city, zip: data.zip, country: data.country || "España" },
+        address: {
+          street:     data.street,
+          city:       data.city,
+          postalCode: data.postalCode,
+          country:    data.country || "España",
+          zone:       data.zone,
+        },
         paymentMethod: data.paymentMethod,
       };
       await createOrderService(orderData);
@@ -181,23 +257,51 @@ const Checkout = () => {
             <SectionHeader>📍 Dirección de envío</SectionHeader>
             <SectionBody>
               <Field>
+                <Label>Zona de envío</Label>
+                <Select $error={errors.zone} {...register("zone", { required: true })}>
+                  {SHIPPING_ZONES.map(z => (
+                    <option key={z.value} value={z.value}>{z.label}</option>
+                  ))}
+                </Select>
+                {selectedZone && (
+                  <ShippingInfo $free={shipping === 0}>
+                    {shipping === 0
+                      ? `🎉 Envío gratuito (pedido superior a ${selectedZone.freeFrom}€)`
+                      : `🚚 Envío: ${shipping.toFixed(2)}€${selectedZone.freeFrom ? ` · Gratis desde ${selectedZone.freeFrom}€` : ""}`
+                    }
+                  </ShippingInfo>
+                )}
+              </Field>
+              <Field>
                 <Label>Dirección</Label>
-                <Input placeholder="Calle Gran Vía, 28" $error={errors.street}
-                  {...register("street", { required: "La dirección es obligatoria" })} />
+                <Input
+                  placeholder="Calle Gran Vía, 28"
+                  autoComplete="new-password"
+                  $error={errors.street}
+                  {...register("street", { required: "La dirección es obligatoria" })}
+                />
                 {errors.street && <ErrorMsg>{errors.street.message}</ErrorMsg>}
               </Field>
               <Row>
                 <Field>
                   <Label>Ciudad</Label>
-                  <Input placeholder="Sevilla" $error={errors.city}
-                    {...register("city", { required: "La ciudad es obligatoria" })} />
+                  <Input
+                    placeholder="Sevilla"
+                    autoComplete="new-password"
+                    $error={errors.city}
+                    {...register("city", { required: "La ciudad es obligatoria" })}
+                  />
                   {errors.city && <ErrorMsg>{errors.city.message}</ErrorMsg>}
                 </Field>
                 <Field>
                   <Label>Código postal</Label>
-                  <Input placeholder="41001" $error={errors.zip}
-                    {...register("zip", { required: "El CP es obligatorio" })} />
-                  {errors.zip && <ErrorMsg>{errors.zip.message}</ErrorMsg>}
+                  <Input
+                    placeholder="41001"
+                    autoComplete="new-password"
+                    $error={errors.postalCode}
+                    {...register("postalCode", { required: "El CP es obligatorio" })}
+                  />
+                  {errors.postalCode && <ErrorMsg>{errors.postalCode.message}</ErrorMsg>}
                 </Field>
               </Row>
             </SectionBody>
@@ -208,8 +312,8 @@ const Checkout = () => {
             <SectionBody>
               <PaymentOptions>
                 {[
-                  { value: "card", label: "💳 Tarjeta de crédito / débito" },
-                  { value: "paypal", label: "🅿️ PayPal" },
+                  { value: "card",     label: "💳 Tarjeta de crédito / débito" },
+                  { value: "paypal",   label: "🅿️ PayPal" },
                   { value: "transfer", label: "🏦 Transferencia bancaria" },
                 ].map(opt => (
                   <PaymentOpt key={opt.value} $selected={paymentMethod === opt.value}>
@@ -222,22 +326,34 @@ const Checkout = () => {
           </Section>
         </Form>
 
-        <Summary>
-          <SummaryHeader>Tu pedido</SummaryHeader>
-          <SummaryBody>
-            {items.map(item => (
-              <ItemLine key={item.product._id}>
-                <span>{item.product.brand} — {item.product.name} ×{item.quantity}</span>
-                <span>{(item.product.price * item.quantity).toFixed(2)} €</span>
-              </ItemLine>
-            ))}
-            <SummaryRow $bold={false}><span>Envío</span><span>{shipping === 0 ? "Gratis 🎉" : `${shipping.toFixed(2)} €`}</span></SummaryRow>
-            <SummaryRow $bold><span>Total</span><span>{total.toFixed(2)} €</span></SummaryRow>
-            <ConfirmBtn onClick={handleSubmit(onSubmit)} disabled={isSubmitting}>
-              {isSubmitting ? "Procesando..." : "✅ Confirmar pedido"}
-            </ConfirmBtn>
-          </SummaryBody>
-        </Summary>
+        <SummaryWrapper>
+          <Summary>
+            <SummaryHeader>Tu pedido</SummaryHeader>
+            <SummaryBody>
+              {items.map(item => (
+                <ItemLine key={item.product._id}>
+                  <span>{item.product.brand} — {item.product.name} ×{item.quantity}</span>
+                  <span>{(item.product.price * item.quantity).toFixed(2)} €</span>
+                </ItemLine>
+              ))}
+              <SummaryRow>
+                <span>Subtotal</span>
+                <span>{totalPrice.toFixed(2)} €</span>
+              </SummaryRow>
+              <SummaryRow>
+                <span>Envío</span>
+                <span>{shipping === 0 ? "Gratis 🎉" : `${shipping.toFixed(2)} €`}</span>
+              </SummaryRow>
+              <SummaryRow $bold>
+                <span>Total</span>
+                <span>{total.toFixed(2)} €</span>
+              </SummaryRow>
+              <ConfirmBtn onClick={handleSubmit(onSubmit)} disabled={isSubmitting}>
+                {isSubmitting ? "Procesando..." : "✅ Confirmar pedido"}
+              </ConfirmBtn>
+            </SummaryBody>
+          </Summary>
+        </SummaryWrapper>
       </Layout>
     </>
   );

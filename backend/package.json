@@ -7,8 +7,13 @@
   "scripts": {
     "dev": "nodemon src/index.js",
     "start": "node src/index.js",
+    "test": "jest --runInBand --forceExit",
     "seed:products": "node src/seeds/productSeed.js",
     "seed:users": "node src/seeds/userSeed.js"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": ["**/tests/**/*.test.js"]
   },
   "keywords": ["futbol", "retro", "ecommerce", "nodejs", "express"],
   "author": "Marcos",
@@ -23,9 +28,12 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.3.4",
     "multer": "^1.4.5-lts.1",
-    "multer-storage-cloudinary": "^4.0.0"
+    "multer-storage-cloudinary": "^4.0.0",
+    "nodemailer": "^8.0.1"
   },
   "devDependencies": {
-    "nodemon": "^3.1.0"
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.0",
+    "supertest": "^7.0.0"
   }
 }

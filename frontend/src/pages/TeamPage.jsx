@@ -4,7 +4,7 @@ import styled, { keyframes } from "styled-components";
 import { getAllProductsService } from "../services/product.service";
 import useFetch from "../hooks/useFetch";
 import ProductCard from "../components/ui/ProductCard";
-import Loader from "../components/ui/Loader";
+import { SkeletonGrid } from "../components/ui/SkeletonCard";
 
 /** Convierte nombres a slug para evitar problemas con ñ/acentos/espacios */
 const toSlug = (str = "") =>
@@ -27,18 +27,18 @@ const displayNameFix = (name = "") => {
 
 /** HeroMap por SLUG (no por nombre con acentos) */
 const heroMap = {
-  "ac-milan":                { h1: "acmilan1",            h2: "acmilan2",            pos1: "center center",  pos2: "center 100%" },
-  "ajax":                    { h1: "ajax1",               h2: "ajax2",               pos1: "center center",  pos2: "center center" },
+  "ac-milan":                { h1: "acmilan1",            h2: "acmilan2",            pos1: "center 05%",  pos2: "center 100%" },
+  "ajax":                    { h1: "ajax1",               h2: "ajax2",               pos1: "center 20%",  pos2: "center center" },
   "alemania":                { h1: "alemania1",           h2: "alemania2",           pos1: "center center",  pos2: "center 10%" },
-  "argentina":               { h1: "argentina1",          h2: "argentina2",          pos1: "center center",  pos2: "center center" },
+  "argentina":               { h1: "argentina1",          h2: "argentina2",          pos1: "center 30%",  pos2: "center 10%" },
   "arsenal":                 { h1: "arsenal1",            h2: "arsenal2",            pos1: "center center",  pos2: "center center" },
   "as-roma":                 { h1: "asroma1",             h2: "asroma2",             pos1: "center center",  pos2: "center center" },
   "barcelona":               { h1: "barcelona1",          h2: "barcelona2",      pos1: "center center",  pos2: "center center" },
   "bayern-munich":           { h1: "bayern1",             h2: "bayern2",             pos1: "center center",  pos2: "center center" },
   "benfica":                 { h1: "benfica1",            h2: "benfica2",            pos1: "center center",  pos2: "center center" },
   "betis":                   { h1: "betis1",              h2: "betis2",              pos1: "center center",  pos2: "center center" },
-  "athletic-club-bilbao":    { h1: "bilbao1",             h2: "bilbao2",             pos1: "center center",  pos2: "center center%" },
-  "borussia-dortmund":       { h1: "borussia1",           h2: "borussia2",           pos1: "center center",  pos2: "center 80%" },
+  "athletic-club-bilbao":    { h1: "bilbao1",             h2: "bilbao2",             pos1: "center center",  pos2: "center center" },
+  "borussia-dortmund":       { h1: "borussia1",           h2: "borussia2",           pos1: "center center",  pos2: "center center" },
   "brasil":                  { h1: "brasil1",             h2: "brasil2",             pos1: "center center",  pos2: "center center" },
   "werder-bremen":           { h1: "bremer1",             h2: "bremer2",             pos1: "center center",  pos2: "center 01%" },
   "cadiz":                   { h1: "cadiz1",              h2: "cadiz2",              pos1: "center center",  pos2: "center center" },
@@ -49,13 +49,13 @@ const heroMap = {
   "france":                  { h1: "francia1",            h2: "francia2",            pos1: "center center",  pos2: "center 15%" },
   "inter-de-milan":          { h1: "intermilan1",         h2: "intermilan2",         pos1: "center center",  pos2: "center center" },
   "bayer-leverkusen":        { h1: "leverkusen1",         h2: "leverkusen2",         pos1: "center center",  pos2: "center center" },
-  "liverpool":               { h1: "liverpool1",          h2: "liverpool2",          pos1: "center 80%",  pos2: "center center%" },
+  "liverpool":               { h1: "liverpool1",          h2: "liverpool2",          pos1: "center 80%",  pos2: "center center" },
   "olympique-de-lyon":       { h1: "lyon1",               h2: "lyon2",               pos1: "center center",  pos2: "center center" },
   "madrid":                  { h1: "madrid1",             h2: "madrid2",             pos1: "center center",  pos2: "center center" },
   "olympique-de-marsella":   { h1: "marsella1",           h2: "marsella2",           pos1: "center center",  pos2: "center center" },
   "nigeria":                 { h1: "nigeria1",            h2: "nigeria2",            pos1: "center center",  pos2: "center center" },
   "numancia":                { h1: "numancia1",           h2: "numancia2",           pos1: "center center",  pos2: "center center" },
-  "paises-bajos":            { h1: "paisesbajos1",        h2: "paisesbajos2",        pos1: "center center",  pos2: "center center" },
+  "paises-bajos":            { h1: "paisesbajos1",        h2: "paisesbajos2",        pos1: "center center",  pos2: "center 70%" },
   "psg":                     { h1: "psg1",                h2: "psg2",                pos1: "center center",  pos2: "center center" },
   "recreativo-de-huelva":    { h1: "recre1",              h2: "recre2",              pos1: "center center",  pos2: "center center" },
   "santos":                  { h1: "santos1",             h2: "santos2",             pos1: "center center",  pos2: "center center" },
@@ -261,7 +261,7 @@ const TeamPage = () => {
         </TeamHeader>
 
         {loading ? (
-          <Loader />
+          <SkeletonGrid count={4} columns={4} />
         ) : products.length === 0 ? (
           <Empty>No hay camisetas disponibles para {decodedBrand}</Empty>
         ) : (

@@ -1,269 +1,290 @@
 # ⚽ RetroFútbol
 
-> La tienda de referencia en camisetas de fútbol retro. Más de 200 camisetas auténticas de los mejores equipos y selecciones de la historia.
+> Tienda online de camisetas de fútbol retro — Proyecto final de Bootcamp Full Stack
 
-![RetroFútbol](./frontend/public/logorf.png)
-
----
-
-## 🌐 Demo en producción
-
-| | URL |
-|---|---|
-| 🖥️ Frontend | [retrofutbol.vercel.app](https://retrofutbol.vercel.app) |
-| ⚙️ Backend API | [retrofutbol-api.onrender.com](https://retrofutbol-api.onrender.com) |
+[![Node.js](https://img.shields.io/badge/Node.js-18.x-339933?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org)
+[![React](https://img.shields.io/badge/React-18.x-61DAFB?style=flat-square&logo=react&logoColor=black)](https://reactjs.org)
+[![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=flat-square&logo=mongodb&logoColor=white)](https://mongodb.com)
+[![Tests](https://img.shields.io/badge/Tests-15%20passing-22c55e?style=flat-square&logo=jest&logoColor=white)](./backend/src/tests)
+[![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](./LICENSE)
 
 ---
 
-## 📖 Descripción del proyecto
+## 🌐 Demo
 
-**RetroFútbol** es un e-commerce fullstack especializado en camisetas de fútbol retro de las mejores ligas y selecciones del mundo: La Liga, Premier League, Serie A, Bundesliga y selecciones nacionales.
+| Frontend | Backend API |
+|----------|------------|
+| 🔗 `https://retrofutbol.vercel.app` *(próximamente)* | 🔗 `https://retrofutbol-api.onrender.com` *(próximamente)* |
 
-El proyecto nació de la pasión por el fútbol y la nostalgia por las camisetas icónicas que marcaron generaciones. Desde la camiseta del Barcelona 98-99 de Ronaldinho hasta la Nigeria del 96, cada prenda tiene una historia.
+---
 
-### ¿Por qué RetroFútbol?
+## 📸 Capturas
 
-- 🎯 **Público objetivo**: Aficionados al fútbol de 20-45 años con nostalgia por el fútbol de los 90 y 2000
-- 🏆 **Propuesta de valor**: Réplicas de alta calidad con personalización de dorsal y nombre
-- 💼 **Modelo de negocio**: Tienda online con gestión de stock, pedidos y panel de administración
+> *(Añade capturas aquí una vez desplegado)*
+
+---
+
+## 📋 Descripción
+
+**RetroFútbol** es una plataforma e-commerce completa para la compra de camisetas de fútbol retro y vintage. Desarrollada como proyecto final de bootcamp Full Stack, implementa todas las funcionalidades de una tienda real: catálogo con filtros, carrito de compra, personalización de camisetas, gestión de pedidos, panel de administración y mucho más.
 
 ---
 
 ## ✨ Funcionalidades
 
-### 👤 Usuario
-- ✅ Registro e inicio de sesión con JWT
-- ✅ Perfil editable (nombre, apellidos, ciudad, teléfono)
-- ✅ Carrito persistente **por usuario** (cada cuenta tiene su propio carrito)
-- ✅ **Personalizador de camisetas**: talla, nombre dorsal, número y parches (+5€)
-- ✅ Checkout con dirección y método de pago
-- ✅ Historial de pedidos con estado en tiempo real
-- ✅ Cierre de sesión desde el perfil y la navbar
+### 🛒 Tienda
+- Catálogo de **+119 camisetas** con búsqueda en tiempo real y filtros (liga, equipo, temporada, precio)
+- Carrito de compra persistente por usuario
+- **Personalizador de camisetas** — nombre, número y parche (+5€)
+- Checkout con zonas de envío (España peninsular, Baleares, Canarias, Portugal, Europa)
+- Envío gratuito en pedidos superiores a 75€
+- Wishlist (lista de favoritos) sincronizada en base de datos
 
-### 🛍️ Tienda
-- ✅ Catálogo con filtros por liga, equipo, precio y búsqueda en tiempo real
-- ✅ Página de equipo con hero de pantalla completa y fondo dividido
-- ✅ Detalle de producto con zoom de imagen
-- ✅ Productos relacionados del mismo equipo
-- ✅ Envío gratis a partir de 75€
-- ✅ Sección "Encuéntranos" con Google Maps integrado
+### 👤 Usuarios
+- Registro y login con JWT
+- Google reCAPTCHA v2 en el registro
+- Recuperación de contraseña por email con token seguro
+- Perfil con historial de pedidos (en curso / finalizados / cancelados)
+- Cancelación de pedidos y confirmación de recepción
 
-### 👑 Administrador
-- ✅ Dashboard con estadísticas (productos, pedidos, usuarios, ingresos)
-- ✅ CRUD completo de productos con subida de imágenes a Cloudinary
-- ✅ Gestión de pedidos con cambio de estado
-- ✅ Gestión de usuarios
+### ⭐ Reviews
+- Sistema de valoraciones (1-5 estrellas)
+- Solo pueden valorar usuarios que han comprado y recibido el producto
+- Distribución de puntuaciones con barras
+
+### 🔧 Panel de Administración
+- Dashboard con gráficas (ingresos, categorías, productos más vendidos)
+- Gestión completa de productos (CRUD + subida de imágenes a Cloudinary)
+- Gestión de pedidos con cambio de estado y notificaciones por email
+- Gestión de usuarios (roles, eliminación)
+- Alertas de stock bajo
+- Paginación completa (20 productos por página)
+
+### 📧 Sistema de Emails (Nodemailer)
+- Confirmación de pedido al cliente y al admin
+- Notificación de envío
+- Confirmación de cancelación
+- Formulario de contacto
+- Recuperación de contraseña
+
+### 🎨 UX/UI
+- Diseño responsive (mobile-first)
+- Animaciones con Framer Motion
+- Skeletons de carga
+- Barra de anuncios rotativos
+- Banner de cookies
+- Botón de WhatsApp flotante
+- SEO dinámico con react-helmet-async
+- Open Graph para redes sociales
+- Página 404 personalizada
 
 ---
 
-## 🛠️ Stack tecnológico
+## 🛠️ Stack Tecnológico
 
 ### Backend
 | Tecnología | Uso |
-|---|---|
-| **Node.js + Express** | Servidor REST API |
-| **MongoDB + Mongoose** | Base de datos NoSQL |
-| **JWT + bcryptjs** | Autenticación y seguridad |
-| **Cloudinary + Multer** | Subida y gestión de imágenes |
-| **csv-parser + fs** | Lectura de CSV para seeds |
+|-----------|-----|
+| Node.js + Express | Servidor y API REST |
+| MongoDB + Mongoose | Base de datos |
+| JWT | Autenticación |
+| bcrypt | Hash de contraseñas |
+| Nodemailer | Envío de emails |
+| Cloudinary | Almacenamiento de imágenes |
+| Jest + Supertest | Testing |
 
 ### Frontend
 | Tecnología | Uso |
-|---|---|
-| **React 19 + Vite** | Framework UI con bundler rápido |
-| **React Router DOM** | Navegación y rutas protegidas |
-| **Styled Components** | CSS-in-JS con variables globales |
-| **React Hook Form** | Formularios con validación |
-| **Axios** | Cliente HTTP con interceptores |
-| **React Hot Toast** | Notificaciones |
-
-### Infraestructura
-| Servicio | Uso |
-|---|---|
-| **MongoDB Atlas** | Base de datos en la nube |
-| **Cloudinary** | CDN de imágenes |
-| **Render** | Despliegue del backend |
-| **Vercel** | Despliegue del frontend |
+|-----------|-----|
+| React 18 + Vite | Framework y bundler |
+| React Router v6 | Enrutamiento |
+| Styled Components | Estilos |
+| Framer Motion | Animaciones |
+| React Hook Form | Formularios |
+| Recharts | Gráficas del dashboard |
+| Axios | Peticiones HTTP |
+| React Hot Toast | Notificaciones |
 
 ---
 
-## 🗄️ Modelo de datos
-
-El proyecto cuenta con **3 colecciones** relacionadas entre sí, generadas a partir de archivos CSV:
+## 🗄️ Modelo de Base de Datos
 
 ```
-Users (30 documentos)
+User
 ├── name, lastname, email, password (bcrypt)
-├── role: "admin" | "user"
-└── city, phone
+├── role: "user" | "admin"
+├── city, phone
+├── wishlist: [Product._id]
+└── resetPasswordToken, resetPasswordExpires
 
-Products (72 documentos)
-├── name, description, price
-├── category (liga), brand (equipo)
-├── temporada, talla, color, gender
-├── stock, rating
-└── image_url, cloudinary_id
+Product
+├── name, description, price, stock
+├── category, brand, temporada, gender, color
+├── image_url (Cloudinary)
+└── averageRating, numReviews
 
-Orders
-├── user → ObjectId (ref: User)
-├── items: [{ product → ObjectId (ref: Product), quantity, price }]
-├── total, status
-└── address, paymentMethod
+Order
+├── user: User._id
+├── items: [{ product, quantity, price, customization }]
+├── total, shippingCost
+├── address: { street, city, postalCode, zone }
+├── paymentMethod
+└── status: pending | processing | shipped | delivered | cancelled
+
+Review
+├── product: Product._id
+├── user: User._id
+├── rating (1-5)
+└── comment
 ```
 
 ---
 
-## 🏗️ Arquitectura del proyecto
-
-```
-retrofutbol/
-├── backend/
-│   └── src/
-│       ├── config/          # DB y Cloudinary
-│       ├── controllers/     # Lógica de negocio
-│       ├── middlewares/     # Auth y roles
-│       ├── models/          # Schemas Mongoose
-│       ├── routes/          # Endpoints REST
-│       └── seeds/           # Datos iniciales desde CSV
-└── frontend/
-    └── src/
-        ├── components/
-        │   ├── layout/      # Navbar, Footer, Layout
-        │   ├── ui/          # ProductCard, CartItem, Button...
-        │   └── admin/       # ProductForm
-        ├── context/         # AuthContext, CartContext
-        ├── hooks/           # useFetch, useCart
-        ├── pages/           # Todas las páginas
-        ├── services/        # Llamadas a la API
-        └── styles/          # GlobalStyles con variables CSS
-```
-
----
-
-## 🚀 Instalación local
+## 🚀 Instalación y uso local
 
 ### Requisitos
 - Node.js 18+
-- MongoDB Atlas account (o MongoDB local)
-- Cloudinary account
+- MongoDB Atlas (o local)
+- Cuenta de Cloudinary
+- Cuenta de Gmail con App Password
 
 ### 1. Clonar el repositorio
+
 ```bash
-git clone https://github.com/tuusuario/retrofutbol.git
+git clone https://github.com/marcosrlpz/retrofutbol.git
 cd retrofutbol
 ```
 
-### 2. Configurar el backend
+### 2. Configurar el Backend
+
 ```bash
 cd backend
 npm install
 ```
 
-Crea el archivo `.env`:
+Crea el archivo `.env` en `/backend`:
+
 ```env
-MONGO_URI=mongodb+srv://...
-JWT_SECRET=tu_jwt_secret
-JWT_EXPIRES_IN=7d
-CLOUDINARY_CLOUD_NAME=...
-CLOUDINARY_API_KEY=...
-CLOUDINARY_API_SECRET=...
 PORT=5000
+MONGO_URI=mongodb+srv://<usuario>:<password>@cluster.mongodb.net/styleshop
+JWT_SECRET=tu_jwt_secret_aqui
+JWT_EXPIRES_IN=7d
+
+CLOUDINARY_CLOUD_NAME=tu_cloud_name
+CLOUDINARY_API_KEY=tu_api_key
+CLOUDINARY_API_SECRET=tu_api_secret
+
+EMAIL_USER=pedidos.retrofutbol@gmail.com
+EMAIL_PASS=tu_app_password_gmail
+EMAIL_FROM=RetroFútbol <pedidos.retrofutbol@gmail.com>
+ADMIN_EMAIL=pedidos.retrofutbol@gmail.com
+
+RECAPTCHA_SECRET=tu_recaptcha_secret
+
+FRONTEND_URL=http://localhost:5173
 ```
 
-Poblar la base de datos:
+Poblar la base de datos con los productos iniciales:
+
 ```bash
-npm run seed:products
-npm run seed:users
+node seed.js
 ```
 
-Arrancar el servidor:
+Iniciar el servidor:
+
 ```bash
-npm run dev   # http://localhost:5000
+npm run dev
 ```
 
-### 3. Configurar el frontend
+### 3. Configurar el Frontend
+
 ```bash
 cd frontend
 npm install
 ```
 
-Crea el archivo `.env`:
+Crea el archivo `.env` en `/frontend`:
+
 ```env
 VITE_API_URL=http://localhost:5000/api
+VITE_RECAPTCHA_SITE_KEY=tu_recaptcha_site_key
 ```
 
-Arrancar el frontend:
+Iniciar el frontend:
+
 ```bash
-npm run dev   # http://localhost:5173
+npm run dev
+```
+
+La aplicación estará disponible en `http://localhost:5173`
+
+---
+
+## 🧪 Tests
+
+```bash
+cd backend
+npm test
+```
+
+**15 tests** cubriendo:
+- ✅ Registro de usuario
+- ✅ Login y autenticación JWT
+- ✅ Rutas protegidas
+- ✅ CRUD de productos (solo admin)
+- ✅ Creación y consulta de pedidos
+
+---
+
+## 📁 Estructura del proyecto
+
+```
+retrofutbol/
+├── backend/
+│   ├── src/
+│   │   ├── config/          # DB y Cloudinary
+│   │   ├── controllers/     # Lógica de negocio
+│   │   ├── middlewares/     # Auth y roles
+│   │   ├── models/          # Schemas de Mongoose
+│   │   ├── routes/          # Endpoints API
+│   │   ├── services/        # Email service
+│   │   └── tests/           # Jest + Supertest
+│   ├── data/
+│   │   └── products.csv     # Datos semilla
+│   └── seed.js
+│
+└── frontend/
+    └── src/
+        ├── components/
+        │   ├── admin/       # Componentes del panel admin
+        │   ├── layout/      # Navbar, Footer, Layout
+        │   └── ui/          # Componentes reutilizables
+        ├── context/         # Auth, Cart, Wishlist
+        ├── hooks/           # useFetch, useCart, useAuth...
+        ├── pages/
+        │   ├── admin/       # Dashboard, ManageProducts...
+        │   └── ...          # Home, Products, Checkout...
+        ├── services/        # Llamadas a la API
+        └── styles/          # GlobalStyles y variables CSS
 ```
 
 ---
 
-## 👥 Credenciales de prueba
+## 👤 Credenciales de demo
 
 | Rol | Email | Contraseña |
-|---|---|---|
-| 👑 Admin | maria1@email.com | password123 |
-| 👤 Usuario | usuario1@email.com | password123 |
+|-----|-------|-----------|
+| Admin | pedidos.retrofutbol@gmail.com | Retro2026! |
+| Usuario | *(registrarse en la web)* | — |
 
 ---
 
-## 🔌 API Endpoints
+## 📬 Contacto
 
-### Auth
-```
-POST   /api/auth/register     Registro
-POST   /api/auth/login        Login
-GET    /api/auth/me           Perfil propio
-PUT    /api/auth/me           Actualizar perfil
-GET    /api/auth/users        Todos los usuarios (admin)
-DELETE /api/auth/users/:id    Eliminar usuario (admin)
-```
+**Marcos** — [@marcosrlpz](https://github.com/marcosrlpz)
 
-### Products
-```
-GET    /api/products          Listar con filtros
-GET    /api/products/:id      Detalle
-POST   /api/products          Crear (admin)
-PUT    /api/products/:id      Editar (admin)
-DELETE /api/products/:id      Eliminar (admin)
-```
-
-### Orders
-```
-POST   /api/orders            Crear pedido
-GET    /api/orders/my-orders  Mis pedidos
-GET    /api/orders/:id        Detalle pedido
-GET    /api/orders            Todos (admin)
-PUT    /api/orders/:id/status Cambiar estado (admin)
-```
+Proyecto: [https://github.com/marcosrlpz/retrofutbol](https://github.com/marcosrlpz/retrofutbol)
 
 ---
 
-## 🎨 Decisiones de diseño
-
-- **Paleta de colores**: Verde oscuro `#2d4a2d` como color principal, dorado `#c9a84c` como acento, crema `#f5f0e8` como fondo — evoca los estadios, el césped y los trofeos
-- **Variables CSS globales**: Todos los colores, espaciados, radios y sombras definidos en `GlobalStyles.js` para coherencia total
-- **Carrito por usuario**: Cada usuario tiene su propio carrito en localStorage con clave `cart_USERID`, evitando mezclar cestas entre sesiones
-- **Personalizador**: El precio sube +5€ automáticamente al añadir nombre o número, y se refleja en el carrito y en el pedido
-- **TeamPage**: Hero a pantalla completa con fondo dividido en 2 fotos del equipo, creando un efecto visual potente
-
----
-
-## 📱 Responsive
-
-La aplicación está optimizada para:
-- 🖥️ Desktop (1400px+)
-- 💻 Laptop (1024px)
-- 📱 Móvil (en progreso)
-
----
-
-## 👨‍💻 Autor
-
-**Marcos** — Proyecto final del Bootcamp Full Stack  
-Hecho con ❤️ y pasión por el fútbol desde Puerto Real, Cádiz 🌊
-
----
-
-*© 2026 RetroFútbol. Todos los derechos reservados.*
+<p align="center">Hecho con ❤️ y mucho ☕ — Bootcamp Full Stack 2026</p>
