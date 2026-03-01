@@ -3,7 +3,7 @@
 > Tienda online de camisetas de fútbol retro — Proyecto final de Bootcamp Full Stack
 
 [![Node.js](https://img.shields.io/badge/Node.js-18.x-339933?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org)
-[![React](https://img.shields.io/badge/React-18.x-61DAFB?style=flat-square&logo=react&logoColor=black)](https://reactjs.org)
+[![React](https://img.shields.io/badge/React-19.x-61DAFB?style=flat-square&logo=react&logoColor=black)](https://reactjs.org)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=flat-square&logo=mongodb&logoColor=white)](https://mongodb.com)
 [![Tests](https://img.shields.io/badge/Tests-15%20passing-22c55e?style=flat-square&logo=jest&logoColor=white)](./backend/src/tests)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](./LICENSE)
@@ -14,13 +14,9 @@
 
 | Frontend | Backend API |
 |----------|------------|
-| 🔗 `https://retrofutbol.vercel.app` *(próximamente)* | 🔗 `https://retrofutbol-api.onrender.com` *(próximamente)* |
+| 🔗 [retrofutbol-cv5y.vercel.app](https://retrofutbol-cv5y.vercel.app) | 🔗 [retrofutbol-api.onrender.com](https://retrofutbol-api.onrender.com) |
 
----
-
-## 📸 Capturas
-
-> *(Añade capturas aquí una vez desplegado)*
+> ⚠️ El backend está en Render plan gratuito — puede tardar ~30 segundos en responder la primera vez si lleva un rato inactivo.
 
 ---
 
@@ -33,49 +29,51 @@
 ## ✨ Funcionalidades
 
 ### 🛒 Tienda
-- Catálogo de **+119 camisetas** con búsqueda en tiempo real y filtros (liga, equipo, temporada, precio)
-- Carrito de compra persistente por usuario
+- Catálogo de **72+ camisetas** con búsqueda en tiempo real (debounce) y filtros (liga, equipo, temporada, precio)
+- Carrito de compra persistente por usuario en localStorage
 - **Personalizador de camisetas** — nombre, número y parche (+5€)
-- Checkout con zonas de envío (España peninsular, Baleares, Canarias, Portugal, Europa)
-- Envío gratuito en pedidos superiores a 75€
-- Wishlist (lista de favoritos) sincronizada en base de datos
+- Checkout con zonas de envío (España peninsular, Baleares, Canarias, Ceuta/Melilla, Portugal, Europa)
+- Envío gratuito en pedidos superiores a 75€ (solo España peninsular)
+- **Wishlist** (lista de favoritos) sincronizada en base de datos por usuario
+- Páginas individuales por equipo con hero fotográfico y sus camisetas
 
 ### 👤 Usuarios
 - Registro y login con JWT
-- Google reCAPTCHA v2 en el registro
+- Google reCAPTCHA v2 en el login
 - Recuperación de contraseña por email con token seguro
-- Perfil con historial de pedidos (en curso / finalizados / cancelados)
-- Cancelación de pedidos y confirmación de recepción
+- Perfil con historial de pedidos separado por estado (En curso / Finalizados / Cancelados)
+- Cancelación de pedidos con reposición de stock
+- Botón "📦 Me ha llegado" para confirmar recepción
 
 ### ⭐ Reviews
-- Sistema de valoraciones (1-5 estrellas)
+- Sistema de valoraciones (1-5 estrellas) con comentario
 - Solo pueden valorar usuarios que han comprado y recibido el producto
-- Distribución de puntuaciones con barras
+- Distribución de puntuaciones con barras de progreso
+- Carrusel de últimas valoraciones reales en la home
 
 ### 🔧 Panel de Administración
-- Dashboard con gráficas (ingresos, categorías, productos más vendidos)
+- Dashboard con gráficas (ingresos por mes, pedidos por estado, ticket medio)
 - Gestión completa de productos (CRUD + subida de imágenes a Cloudinary)
-- Gestión de pedidos con cambio de estado y notificaciones por email
+- Gestión de pedidos con cambio de estado y notificaciones automáticas por email
 - Gestión de usuarios (roles, eliminación)
-- Alertas de stock bajo
-- Paginación completa (20 productos por página)
+- Email automático al cliente cuando el pedido pasa a "Enviado"
 
 ### 📧 Sistema de Emails (Nodemailer)
 - Confirmación de pedido al cliente y al admin
-- Notificación de envío
-- Confirmación de cancelación
-- Formulario de contacto
-- Recuperación de contraseña
+- Notificación de envío al cliente
+- Confirmación de cancelación a ambos
+- Formulario de contacto a inf.retrofutbol@gmail.com
+- Recuperación de contraseña con link seguro
 
 ### 🎨 UX/UI
 - Diseño responsive (mobile-first)
-- Animaciones con Framer Motion
-- Skeletons de carga
+- Animaciones con **Framer Motion** (transiciones de página y tarjetas)
+- Skeleton loaders en catálogo y páginas de equipo
+- Scroll to top automático al cambiar de ruta
 - Barra de anuncios rotativos
 - Banner de cookies
 - Botón de WhatsApp flotante
 - SEO dinámico con react-helmet-async
-- Open Graph para redes sociales
 - Página 404 personalizada
 
 ---
@@ -88,22 +86,24 @@
 | Node.js + Express | Servidor y API REST |
 | MongoDB + Mongoose | Base de datos |
 | JWT | Autenticación |
-| bcrypt | Hash de contraseñas |
+| bcryptjs | Hash de contraseñas |
 | Nodemailer | Envío de emails |
 | Cloudinary | Almacenamiento de imágenes |
-| Jest + Supertest | Testing |
+| Jest + Supertest | Testing (15 tests) |
 
 ### Frontend
 | Tecnología | Uso |
 |-----------|-----|
-| React 18 + Vite | Framework y bundler |
+| React 19 + Vite | Framework y bundler |
 | React Router v6 | Enrutamiento |
-| Styled Components | Estilos |
-| Framer Motion | Animaciones |
+| Styled Components | Estilos con variables CSS |
+| Framer Motion | Animaciones y transiciones |
 | React Hook Form | Formularios |
 | Recharts | Gráficas del dashboard |
 | Axios | Peticiones HTTP |
 | React Hot Toast | Notificaciones |
+| React Helmet Async | SEO dinámico |
+| React Google reCAPTCHA | Protección anti-bots |
 
 ---
 
@@ -119,7 +119,7 @@ User
 
 Product
 ├── name, description, price, stock
-├── category, brand, temporada, gender, color
+├── category (liga), brand (equipo), temporada, gender
 ├── image_url (Cloudinary)
 └── averageRating, numReviews
 
@@ -167,6 +167,7 @@ Crea el archivo `.env` en `/backend`:
 ```env
 PORT=5000
 MONGO_URI=mongodb+srv://<usuario>:<password>@cluster.mongodb.net/styleshop
+
 JWT_SECRET=tu_jwt_secret_aqui
 JWT_EXPIRES_IN=7d
 
@@ -174,17 +175,17 @@ CLOUDINARY_CLOUD_NAME=tu_cloud_name
 CLOUDINARY_API_KEY=tu_api_key
 CLOUDINARY_API_SECRET=tu_api_secret
 
-EMAIL_USER=pedidos.retrofutbol@gmail.com
+EMAIL_USER=tu_email@gmail.com
 EMAIL_PASS=tu_app_password_gmail
-EMAIL_FROM=RetroFútbol <pedidos.retrofutbol@gmail.com>
-ADMIN_EMAIL=pedidos.retrofutbol@gmail.com
+EMAIL_FROM=RetroFútbol <tu_email@gmail.com>
+ADMIN_EMAIL=tu_email@gmail.com
 
 RECAPTCHA_SECRET=tu_recaptcha_secret
 
 FRONTEND_URL=http://localhost:5173
 ```
 
-Poblar la base de datos con los productos iniciales:
+Poblar la base de datos:
 
 ```bash
 node seed.js
@@ -228,11 +229,13 @@ npm test
 ```
 
 **15 tests** cubriendo:
-- ✅ Registro de usuario
+- ✅ Registro de usuario (nuevo, duplicado, campos incompletos)
 - ✅ Login y autenticación JWT
-- ✅ Rutas protegidas
-- ✅ CRUD de productos (solo admin)
-- ✅ Creación y consulta de pedidos
+- ✅ Rutas protegidas (con y sin token)
+- ✅ Token inválido
+- ✅ CRUD de productos (paginación, filtros, protección admin)
+- ✅ Recuperación de contraseña
+- ✅ Rutas inexistentes (404)
 
 ---
 
@@ -242,30 +245,32 @@ npm test
 retrofutbol/
 ├── backend/
 │   ├── src/
-│   │   ├── config/          # DB y Cloudinary
-│   │   ├── controllers/     # Lógica de negocio
-│   │   ├── middlewares/     # Auth y roles
-│   │   ├── models/          # Schemas de Mongoose
-│   │   ├── routes/          # Endpoints API
-│   │   ├── services/        # Email service
-│   │   └── tests/           # Jest + Supertest
+│   │   ├── app.js               # Express app (exportada para tests)
+│   │   ├── index.js             # Arranque del servidor
+│   │   ├── config/              # DB y Cloudinary
+│   │   ├── controllers/         # Lógica de negocio
+│   │   ├── middlewares/         # Auth y roles
+│   │   ├── models/              # Schemas de Mongoose
+│   │   ├── routes/              # Endpoints API
+│   │   ├── services/            # Email service
+│   │   └── tests/               # Jest + Supertest (15 tests)
 │   ├── data/
-│   │   └── products.csv     # Datos semilla
-│   └── seed.js
+│   │   └── products.csv         # Datos semilla (leídos con fs)
+│   └── seed.js                  # Script de seed con Node fs
 │
 └── frontend/
     └── src/
         ├── components/
-        │   ├── admin/       # Componentes del panel admin
-        │   ├── layout/      # Navbar, Footer, Layout
-        │   └── ui/          # Componentes reutilizables
-        ├── context/         # Auth, Cart, Wishlist
-        ├── hooks/           # useFetch, useCart, useAuth...
+        │   ├── admin/           # Componentes del panel admin
+        │   ├── layout/          # Navbar, Footer, Layout
+        │   └── ui/              # Componentes reutilizables
+        ├── context/             # Auth, Cart, Wishlist
+        ├── hooks/               # useFetch, useCart, useAuth...
         ├── pages/
-        │   ├── admin/       # Dashboard, ManageProducts...
-        │   └── ...          # Home, Products, Checkout...
-        ├── services/        # Llamadas a la API
-        └── styles/          # GlobalStyles y variables CSS
+        │   ├── admin/           # Dashboard, ManageProducts, ManageOrders, ManageUsers
+        │   └── ...              # Home, Products, TeamPage, Checkout, Profile...
+        ├── services/            # Llamadas a la API
+        └── styles/              # GlobalStyles y variables CSS
 ```
 
 ---
