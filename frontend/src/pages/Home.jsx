@@ -315,10 +315,19 @@ const Home = () => {
       { brand: "Nigeria", nth: 1 }, { brand: "Recreativo de Huelva", nth: 0 },
       { brand: "Numancia", nth: 1 }, { brand: "Manchester United", nth: 0 },
     ];
-    return targets.map(({ brand, nth }) => {
+    const selected = targets.map(({ brand, nth }) => {
       const matches = data.products.filter(p => p.brand === brand);
       return matches[nth] || matches[0] || null;
     }).filter(Boolean);
+
+    if (selected.length < 8) {
+      const selectedIds = new Set(selected.map(p => p._id));
+      const extras = data.products
+        .filter(p => !selectedIds.has(p._id))
+        .slice(0, 8 - selected.length);
+      return [...selected, ...extras];
+    }
+    return selected;
   }, [data]);
 
   const novedades = useMemo(() => {
