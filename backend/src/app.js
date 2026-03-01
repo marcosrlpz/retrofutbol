@@ -22,8 +22,12 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) callback(null, true);
-    else callback(new Error(`CORS bloqueado para: ${origin}`));
+    if (!origin) return callback(null, true);
+    // Permitir dominio exacto de la lista
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    // Permitir cualquier subdominio de Vercel (despliegues dinámicos)
+    if (/^https:\/\/retrofutbol.*\.vercel\.app$/.test(origin)) return callback(null, true);
+    callback(new Error(`CORS bloqueado para: ${origin}`));
   },
   credentials: true,
 }));
