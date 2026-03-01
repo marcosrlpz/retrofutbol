@@ -84,6 +84,10 @@ const Container = styled.div`
   align-items: center;
   justify-content: space-between;
   gap: var(--spacing-lg);
+  @media (max-width: 768px) {
+    padding: 0 0.75rem;
+    gap: 0.25rem;
+  }
 `;
 
 const Brand = styled(Link)`
@@ -96,6 +100,10 @@ const Brand = styled(Link)`
     width: 220px;
     object-fit: contain;
     object-position: left center;
+    @media (max-width: 768px) {
+      width: 120px;
+      height: 42px;
+    }
   }
 `;
 
@@ -228,7 +236,14 @@ const DropItem = styled(Link)`
   &:hover { background: rgba(45,74,45,0.08); color: #c9a84c; padding-left: 1.5rem; }
 `;
 
-const Actions = styled.div`display: flex; align-items: center; gap: var(--spacing-sm);`;
+const Actions = styled.div`
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  @media (max-width: 768px) {
+    gap: 0.1rem;
+  }
+`;
 
 const IconBtn = styled(Link)`
   position: relative;
@@ -240,6 +255,9 @@ const IconBtn = styled(Link)`
   color: #2d4a2d;
   transition: var(--transition);
   &:hover { background: rgba(45,74,45,0.1); }
+  @media (max-width: 768px) {
+    width: 34px; height: 34px;
+  }
 `;
 
 const WishIconBtn = styled(Link)`
@@ -252,6 +270,10 @@ const WishIconBtn = styled(Link)`
   font-size: 1.1rem;
   transition: var(--transition);
   &:hover { background: rgba(45,74,45,0.1); transform: scale(1.1); }
+  @media (max-width: 768px) {
+    width: 34px; height: 34px;
+    font-size: 1rem;
+  }
 `;
 
 const WishBadge = styled.span`
@@ -277,6 +299,9 @@ const LogoutBtn = styled.button`
   border: 1.5px solid transparent;
   &:hover { background: rgba(45,74,45,0.1); border-color: #2d4a2d; }
   svg { stroke: #2d4a2d; }
+  @media (max-width: 768px) {
+    width: 34px; height: 34px;
+  }
 `;
 
 const Badge = styled.span`
@@ -297,7 +322,12 @@ const LoginBtn = styled(Link)`
   font-size: 0.8rem; font-weight: 700;
   border-radius: var(--radius-md);
   transition: var(--transition);
+  white-space: nowrap;
   &:hover { background: #c9a84c; color: #1a2e1a; }
+  @media (max-width: 768px) {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.75rem;
+  }
 `;
 
 const MobileBtn = styled.button`
@@ -307,6 +337,7 @@ const MobileBtn = styled.button`
   border: 1px solid #c4b89a;
   align-items: center; justify-content: center;
   font-size: 1.1rem; color: #2d4a2d;
+  flex-shrink: 0;
   @media (max-width: 1100px) { display: flex; }
 `;
 
@@ -374,7 +405,6 @@ const Navbar = () => {
   const { totalItems } = useCart();
   const { wishlist } = useWishlist();
 
-  // Rotación automática de mensajes cada 3 segundos
   useEffect(() => {
     const interval = setInterval(() => {
       setMsgIndex(i => (i + 1) % MESSAGES.length);
